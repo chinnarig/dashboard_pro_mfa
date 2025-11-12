@@ -16,7 +16,8 @@ export default function DashBoardPage() {
     async function fetchCalls() {
       try {
         setIsLoading(true);
-        const response = await fetch('https://zstream-z6nbrimbea-uc.a.run.app/api/v1/calls', {
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080';
+        const response = await fetch(`${backendUrl}/api/v1/calls`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
