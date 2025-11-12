@@ -1,4 +1,3 @@
-// This is your Prisma schema file
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,85 +7,101 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
 model User {
-  id                  String    @id @default(cuid())
+  id                  String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  company_id          String           @db.Uuid
+  email               String           @unique @db.VarChar(255)
+  password            String           @db.VarChar(255)
+  fullName            String           @map("full_name") @db.VarChar(255)
+  role                user_role        @default(USER)
+  isActive            Boolean          @default(true) @map("is_active")
+  emailVerifiedBool   Boolean          @default(false) @map("email_verified")
+  mfaEnabled          Boolean          @default(false) @map("mfa_enabled")
+  mfaSecret           String?          @map("mfa_secret") @db.VarChar(255)
+  mfaBackupCodes      String?          @map("mfa_backup_codes")
+  created_at          DateTime?        @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime?        @db.Timestamptz(6)
+  lastLogin           DateTime?        @map("last_login") @db.Timestamptz(6)
   name                String?
-  username            String?   @unique
-  email               String    @unique
-  emailVerified       DateTime?
+  username            String?          @unique
   image               String?
-  password            String?
   bio                 String?
-  role                Role      @default(USER)
-  
-  // Verification and reset tokens
-  verificationToken   String?   @unique
+  verificationToken   String?          @unique
   verificationExpires DateTime?
-  resetToken          String?   @unique
+  resetToken          String?          @unique
   resetTokenExpires   DateTime?
-  
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  audit_logs          audit_logs[]
+  refresh_tokens      refresh_tokens[]
+  companies           companies        @relation(fields: [company_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  // Relations
-  accounts            Account[]
-  sessions            Session[]
-
+  @@index([company_id], map: "idx_users_company_id")
+  @@index([email], map: "idx_users_email")
+  @@index([isActive], map: "idx_users_is_active")
+  @@index([mfaEnabled], map: "idx_users_mfa_enabled")
   @@map("users")
 }
 
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model audit_logs {
+  id            String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  company_id    String    @db.Uuid
+  user_id       String?   @db.Uuid
+  action        String    @db.VarChar(100)
+  resource_type String?   @db.VarChar(50)
+  resource_id   String?   @db.Uuid
+  ip_address    String?   @db.VarChar(45)
+  user_agent    String?
+  extra_data    String?
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  companies     companies @relation(fields: [company_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users         User?     @relation(fields: [user_id], references: [id], onUpdate: NoAction)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-  @@map("accounts")
+  @@index([action], map: "idx_audit_logs_action")
+  @@index([company_id], map: "idx_audit_logs_company_id")
+  @@index([created_at(sort: Desc)], map: "idx_audit_logs_created_at")
+  @@index([user_id], map: "idx_audit_logs_user_id")
 }
 
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model companies {
+  id             String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name           String       @db.VarChar(255)
+  domain         String       @unique @db.VarChar(255)
+  is_active      Boolean      @default(true)
+  created_at     DateTime?    @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime?    @db.Timestamptz(6)
+  address        String?
+  phone_number_1 String?      @db.VarChar(20)
+  phone_number_2 String?      @db.VarChar(20)
+  api_key        String?      @unique @db.VarChar(255)
+  audit_logs     audit_logs[]
+  users          User[]
 
-  @@map("sessions")
+  @@index([api_key], map: "idx_companies_api_key")
 }
 
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model refresh_tokens {
+  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id    String    @db.Uuid
+  token      String    @unique @db.VarChar(500)
+  expires_at DateTime  @db.Timestamptz(6)
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  revoked    Boolean   @default(false)
+  users      User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@unique([identifier, token])
-  @@map("verification_tokens")
+  @@index([token], map: "idx_refresh_tokens_token")
+  @@index([user_id], map: "idx_refresh_tokens_user_id")
 }
 
-model Voice {
-  id            String   @id @default(cuid())
-  voice_id      String
-  userId        String
-  llm_id        String
-  agent_id      String
-  linked_number String 
+enum user_role {
+  ADMIN
+  USER
+}
 
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+enum userrole {
+  ADMIN
+  MANAGER
+  USER
 }

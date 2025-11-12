@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
                 where,
                 skip: (page - 1) * limit,
                 take: limit,
-                orderBy: { createdAt: 'desc' },
+                orderBy: { created_at: 'desc' },
             }),
             prisma.voice.count({ where }),
         ]);

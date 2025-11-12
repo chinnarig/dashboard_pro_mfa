@@ -58,7 +58,7 @@ interface UserData {
     email: string;
     image: string | null;
     role: string;
-    createdAt: Date;
+    created_at: Date;
 }
 
 interface UserManagementTableProps {
@@ -266,7 +266,7 @@ export function UserManagementTable({
                                         </Badge>
                                     </TableCell>
                                     <TableCell>
-                                        {new Date(user.createdAt).toLocaleDateString()}
+                                        {new Date(user.created_at).toLocaleDateString()}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <DropdownMenu>

@@ -17,9 +17,10 @@ NC='\033[0m' # No Color
 # ===========================================
 
 export PROJECT_ID="zlavox-ai"
-export SERVICE_NAME="zlavox-dashboard"
+export SERVICE_NAME="zlavox-dashboard-mfa"
 export REGION="us-central1"
-export CLOUD_SQL_INSTANCE="zlavox-ai:us-central1:zlavoxdb"
+# export CLOUD_SQL_INSTANCE="zlavox-ai:us-central1:zlavoxdb"
+export CLOUD_SQL_INSTANCE="zlavox-ai:us-central1:mfa"
 
 # ===========================================
 # Functions
@@ -60,7 +61,7 @@ if [ ! -f "env.yaml" ]; then
     print_error "env.yaml file not found!"
     print_info "Creating a template env.yaml file..."
     cat > env.yaml << 'EOF'
-DATABASE_URL: "postgresql://postgres:Admin@011235@/postgres?host=/cloudsql/zlavox-ai:us-central1:zlavoxdb"
+DATABASE_URL: "postgresql://postgres:Admin@011235@/postgres?host=/cloudsql/zlavox-ai:us-central1:mfa"
 NEXTAUTH_URL: "https://dashboard.zlavox.ai"
 NEXTAUTH_SECRET: "Jk7xZ9mQpL8nR3vW5yT2sC6fH1dG4bN0aE8uI7oP5qM="
 NEXT_PUBLIC_APP_URL: "https://dashboard.zlavox.ai"

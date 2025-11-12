@@ -10,12 +10,26 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { loginSchema, type LoginInput } from '@/lib/validations/schemas';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Shield } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
-export function LoginForm() {
+interface LoginFormProps {
+    onMfaStateChange?: (showingMfa: boolean) => void;
+}
+
+export function LoginForm({ onMfaStateChange }: LoginFormProps) {
     const router = useRouter();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
+    const [showMfaInput, setShowMfaInput] = useState(false);
+    const [mfaCode, setMfaCode] = useState('');
+    const [credentials, setCredentials] = useState<{ email: string; password: string } | null>(null);
 
     const {
         register,
@@ -27,8 +41,7 @@ export function LoginForm() {
 
     const onSubmit = async (data: LoginInput) => {
         setIsLoading(true);
-
-
+        setCredentials(data);
 
         try {
             const result = await signIn('credentials', {
@@ -36,11 +49,67 @@ export function LoginForm() {
                 password: data.password,
                 redirect: false,
             });
-            console.log(data, result)
+            
+            console.log(data, result);
+            
             if (result?.error) {
+                if (result.error === 'MFA_REQUIRED') {
+                    // Show MFA input
+                    setShowMfaInput(true);
+                    if (onMfaStateChange) onMfaStateChange(true);
+                    setIsLoading(false);
+                    return;
+                }
+                
                 toast({
                     title: 'Error',
                     description: 'Invalid email or password',
+                    variant: 'destructive',
+                });
+            } else {
+                toast({
+                    title: 'Success',
+                    description: 'Logged in successfully',
+                });
+                router.push('/');
+                router.refresh();
+            }
+        } catch (error) {
+            console.log(error);
+            toast({
+                title: 'Error',
+                description: 'Something went wrong',
+                variant: 'destructive',
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const onMfaSubmit = async () => {
+        if (!credentials || !mfaCode || (mfaCode.length !== 6 && mfaCode.length !== 9)) {
+            toast({
+                title: 'Error',
+                description: 'Please enter a valid 6-digit code or backup code',
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        setIsLoading(true);
+
+        try {
+            const result = await signIn('credentials', {
+                email: credentials.email,
+                password: credentials.password,
+                mfaCode: mfaCode,
+                redirect: false,
+            });
+            
+            if (result?.error) {
+                toast({
+                    title: 'Error',
+                    description: 'Invalid MFA code',
                     variant: 'destructive',
                 });
             } else {
@@ -77,6 +146,74 @@ export function LoginForm() {
             setIsLoading(false);
         }
     };
+
+    // Show MFA verification form if MFA is required
+    if (showMfaInput) {
+        return (
+            <div className="space-y-4">
+                <div className="space-y-2">
+                    <div className="flex items-center gap-2 mb-2">
+                        <Shield className="h-5 w-5" />
+                        <h3 className="text-lg font-semibold">Two-Factor Authentication</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                        Enter the 6-digit code from your authenticator app or use a backup code.
+                    </p>
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor="mfa-code">Authentication Code</Label>
+                    <Input
+                        id="mfa-code"
+                        type="text"
+                        placeholder="000000 or XXXX-XXXX"
+                        value={mfaCode}
+                        onChange={(e) => setMfaCode(e.target.value.replace(/[^0-9A-Za-z-]/g, ''))}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter' && mfaCode.length >= 6) {
+                                onMfaSubmit();
+                            }
+                        }}
+                        disabled={isLoading}
+                        autoFocus
+                        maxLength={9}
+                    />
+                    <p className="text-sm text-muted-foreground">
+                        Enter code from your authenticator app or a backup code
+                    </p>
+                </div>
+
+                <div className="flex gap-2">
+                    <Button
+                        onClick={onMfaSubmit}
+                        disabled={isLoading || mfaCode.length < 6}
+                        className="flex-1"
+                    >
+                        {isLoading ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Verifying...
+                            </>
+                        ) : (
+                            'Verify & Sign In'
+                        )}
+                    </Button>
+                    <Button 
+                        variant="outline" 
+                        onClick={() => {
+                            setShowMfaInput(false);
+                            if (onMfaStateChange) onMfaStateChange(false);
+                            setMfaCode('');
+                            setCredentials(null);
+                        }}
+                        disabled={isLoading}
+                    >
+                        Cancel
+                    </Button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">

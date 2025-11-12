@@ -27,6 +27,7 @@ export const authOptions: NextAuthOptions = {
             credentials: {
                 email: { label: 'Email', type: 'email' },
                 password: { label: 'Password', type: 'password' },
+                mfaCode: { label: 'MFA Code', type: 'text' },
             },
             async authorize(credentials) {
                 if (!credentials?.email || !credentials?.password) {
@@ -51,6 +52,35 @@ export const authOptions: NextAuthOptions = {
                 if (!isCorrectPassword) {
                     throw new Error('Invalid credentials');
                 }
+
+                // Check if MFA is enabled
+                if (user.mfaEnabled) {
+                    if (!credentials.mfaCode) {
+                        // Signal that MFA is required
+                        throw new Error('MFA_REQUIRED');
+                    }
+
+                    // Verify MFA code via API
+                    const verifyResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/mfa/verify`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            email: credentials.email,
+                            password: credentials.password,
+                            code: credentials.mfaCode,
+                        }),
+                    });
+
+                    if (!verifyResponse.ok) {
+                        throw new Error('Invalid MFA code');
+                    }
+                }
+
+                // Update last login
+                await prisma.user.update({
+                    where: { id: user.id },
+                    data: { lastLogin: new Date() },
+                });
 
                 return {
                     id: user.id,

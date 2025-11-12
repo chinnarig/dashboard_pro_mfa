@@ -18,7 +18,7 @@ async function getUserById(id: string) {
             image: true,
             bio: true,
             role: true,
-            createdAt: true,
+            created_at: true,
         },
     });
 
@@ -72,7 +72,7 @@ export default async function UserPage({
                             <div className="flex items-center gap-2">
                                 <CalendarDays className="h-4 w-4 text-muted-foreground" />
                                 <div className="text-sm font-medium">
-                                    {new Date(user.createdAt).toLocaleDateString('en-US', {
+                                    {new Date(user.created_at).toLocaleDateString('en-US', {
                                         month: 'short',
                                         year: 'numeric',
                                     })}

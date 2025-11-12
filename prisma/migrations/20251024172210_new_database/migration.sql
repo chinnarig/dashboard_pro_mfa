@@ -16,7 +16,7 @@ CREATE TABLE "users" (
     "verificationExpires" TIMESTAMP(3),
     "resetToken" TEXT,
     "resetTokenExpires" TIMESTAMP(3),
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
