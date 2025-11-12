@@ -1,98 +1,92 @@
+import { Suspense } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { UserPlus } from 'lucide-react';
+import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
-import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { UserManagementTable } from '@/components/user/UserManagementTable';
+import UsersTable from '@/components/user/UsersTable';
 
-export const metadata = {
-    title: 'User Management | Admin Dashboard',
-    description: 'Manage users and their permissions',
-};
-
-interface SearchParams {
-    search?: string;
-    role?: string;
-    page?: string;
+interface User {
+    id: string;
+    name: string | null;
+    username: string | null;
+    email: string;
+    emailVerified: Date | null;
+    image: string | null;
+    bio: string | null;
+    role: string;
+    createdAt: Date;
+    updatedAt: Date;
+    _count: {
+        accounts: number;
+        sessions: number;
+    };
 }
 
-async function getUsers(searchParams: SearchParams) {
-    const page = parseInt(searchParams.page || '1');
-    const limit = 20;
-    const skip = (page - 1) * limit;
-
-    const where: any = {};
-
-    // Search filter
-    if (searchParams.search) {
-        where.OR = [
-            { name: { contains: searchParams.search, mode: 'insensitive' } },
-            { username: { contains: searchParams.search, mode: 'insensitive' } },
-            { email: { contains: searchParams.search, mode: 'insensitive' } },
-        ];
-    }
-
-    // Role filter
-    if (searchParams.role && searchParams.role !== 'ALL') {
-        where.role = searchParams.role;
-    }
-
-    const [users, total] = await Promise.all([
-        prisma.user.findMany({
-            where,
+async function getUsers(): Promise<User[]> {
+    try {
+        const users = await prisma.user.findMany({
             select: {
                 id: true,
                 name: true,
                 username: true,
                 email: true,
+                emailVerified: true,
                 image: true,
+                bio: true,
                 role: true,
-                created_at: true,
+                createdAt: true,
+                updatedAt: true,
+                _count: {
+                    select: {
+                        accounts: true,
+                        sessions: true,
+                    },
+                },
             },
-            orderBy: { created_at: 'desc' },
-            skip,
-            take: limit,
-        }),
-        prisma.user.count({ where }),
-    ]);
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
 
-    return {
-        users,
-        pagination: {
-            page,
-            limit,
-            total,
-            totalPages: Math.ceil(total / limit),
-        },
-    };
+        return users;
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        return [];
+    }
 }
 
-export default async function AdminUsersPage({
-    searchParams,
-}: {
-    searchParams: Promise<SearchParams>;
-}) {
-    const currentUser = await getCurrentUser();
+export default async function UsersPage() {
+    const session = await getServerSession();
 
-    // Check if user is admin
-    if (!currentUser || currentUser.role !== 'ADMIN') {
-        redirect('/');
+    if (!session) {
+        redirect('/login');
     }
-    const resolvedSearchParams = await searchParams;
-    const { users, pagination } = await getUsers(resolvedSearchParams);
+
+    const users = await getUsers();
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold">User Management</h1>
-                <p className="text-muted-foreground mt-2">
-                    Manage users, roles, and permissions
-                </p>
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold">User Management</h1>
+                    <p className="text-muted-foreground mt-2">
+                        Manage and view all system users
+                    </p>
+                </div>
             </div>
 
-            <UserManagementTable
-                users={users}
-                pagination={pagination}
-                searchParams={resolvedSearchParams}
-            />
+            <Card>
+                <CardHeader>
+                    <CardTitle>All Users ({users.length})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Suspense fallback={<div>Loading...</div>}>
+                        <UsersTable users={users} />
+                    </Suspense>
+                </CardContent>
+            </Card>
         </div>
     );
 }

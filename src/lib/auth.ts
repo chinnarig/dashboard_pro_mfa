@@ -27,7 +27,6 @@ export const authOptions: NextAuthOptions = {
             credentials: {
                 email: { label: 'Email', type: 'email' },
                 password: { label: 'Password', type: 'password' },
-                mfaCode: { label: 'MFA Code', type: 'text' },
             },
             async authorize(credentials) {
                 if (!credentials?.email || !credentials?.password) {
@@ -53,34 +52,29 @@ export const authOptions: NextAuthOptions = {
                     throw new Error('Invalid credentials');
                 }
 
-                // Check if MFA is enabled
-                if (user.mfaEnabled) {
-                    if (!credentials.mfaCode) {
-                        // Signal that MFA is required
-                        throw new Error('MFA_REQUIRED');
-                    }
-
-                    // Verify MFA code via API
-                    const verifyResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/mfa/verify`, {
+                // Call your backend API to get the API key
+                let apiKey = '';
+                try {
+                    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL;
+                    const response = await fetch(`${backendUrl}/api/auth/login`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
                         body: JSON.stringify({
                             email: credentials.email,
                             password: credentials.password,
-                            code: credentials.mfaCode,
                         }),
                     });
 
-                    if (!verifyResponse.ok) {
-                        throw new Error('Invalid MFA code');
+                    if (response.ok) {
+                        const data = await response.json();
+                        apiKey = data.apiKey || data.api_key || data.token || '';
                     }
+                } catch (error) {
+                    console.error('Failed to fetch API key from backend:', error);
+                    // Continue without API key - you can throw error here if API key is mandatory
                 }
-
-                // Update last login
-                await prisma.user.update({
-                    where: { id: user.id },
-                    data: { lastLogin: new Date() },
-                });
 
                 return {
                     id: user.id,
@@ -89,6 +83,7 @@ export const authOptions: NextAuthOptions = {
                     username: user.username || user.email.split('@')[0], // Ensure username is never null
                     role: user.role,
                     image: user.image,
+                    apiKey, // Include API key in the user object
                 };
             },
         }),
@@ -99,6 +94,7 @@ export const authOptions: NextAuthOptions = {
                 token.id = user.id;
                 token.role = user.role;
                 token.username = user.username;
+                token.apiKey = user.apiKey; // Store API key in JWT token
             }
 
             // Handle session updates
@@ -113,6 +109,7 @@ export const authOptions: NextAuthOptions = {
                 session.user.id = token.id as string;
                 session.user.role = token.role;
                 session.user.username = token.username as string;
+                session.user.apiKey = token.apiKey as string; // Include API key in session
             }
             return session;
         },

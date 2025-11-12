@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { ProfileForm } from '@/components/form/ProfileForm';
-import { MfaSettings } from '@/components/auth/MFASettings';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -22,8 +21,7 @@ async function getUserData(userId: string) {
             image: true,
             bio: true,
             role: true,
-            created_at: true,
-            mfaEnabled: true,
+            createdAt: true,
         },
     });
 
@@ -57,7 +55,6 @@ export default async function SettingsPage() {
                     <TabsList>
                         <TabsTrigger value="profile">Profile</TabsTrigger>
                         <TabsTrigger value="account">Account</TabsTrigger>
-                        <TabsTrigger value="security">Security</TabsTrigger>
                         <TabsTrigger value="preferences">Preferences</TabsTrigger>
                     </TabsList>
 
@@ -89,7 +86,7 @@ export default async function SettingsPage() {
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Member Since</label>
                                     <p className="text-sm text-muted-foreground">
-                                        {new Date(user.created_at).toLocaleDateString('en-US', {
+                                        {new Date(user.createdAt).toLocaleDateString('en-US', {
                                             month: 'long',
                                             day: 'numeric',
                                             year: 'numeric',
@@ -98,11 +95,6 @@ export default async function SettingsPage() {
                                 </div>
                             </CardContent>
                         </Card>
-                    </TabsContent>
-
-                    {/* Security Tab */}
-                    <TabsContent value="security">
-                        <MfaSettings mfaEnabled={user.mfaEnabled} />
                     </TabsContent>
 
                     {/* Preferences Tab */}

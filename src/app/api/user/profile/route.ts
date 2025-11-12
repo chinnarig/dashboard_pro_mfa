@@ -104,7 +104,7 @@ export async function GET(request: NextRequest) {
                 image: true,
                 bio: true,
                 role: true,
-                created_at: true,
+                createdAt: true,
             },
         });
 
