@@ -22,7 +22,7 @@ export async function GET(
                 image: true,
                 bio: true,
                 role: true,
-                createdAt: true,
+                created_at: true,
             },
         });
 

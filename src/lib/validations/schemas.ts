@@ -51,6 +51,21 @@ export const updateProfileSchema = z.object({
     image: z.string().url().optional(),
 });
 
+// MFA Schemas
+export const mfaVerificationSchema = z.object({
+    email: z.string().email('Invalid email address'),
+    code: z.string().length(6, 'Code must be 6 digits'),
+});
+
+export const mfaEnableSchema = z.object({
+    code: z.string().length(6, 'Code must be 6 digits'),
+});
+
+export const mfaDisableSchema = z.object({
+    password: z.string().min(6, 'Password is required'),
+    code: z.string().optional(),
+});
+
 // Type exports
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
@@ -59,3 +74,6 @@ export type UpdatePostInput = z.infer<typeof updatePostSchema>;
 export type CreateCommentInput = z.infer<typeof createCommentSchema>;
 export type UpdateCommentInput = z.infer<typeof updateCommentSchema>;
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+export type MfaVerificationInput = z.infer<typeof mfaVerificationSchema>;
+export type MfaEnableInput = z.infer<typeof mfaEnableSchema>;
+export type MfaDisableInput = z.infer<typeof mfaDisableSchema>;

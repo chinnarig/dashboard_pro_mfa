@@ -26,7 +26,7 @@ async function getUser(username: string) {
             image: true,
             bio: true,
             role: true,
-            createdAt: true,
+            created_at: true,
         },
     });
 
@@ -112,7 +112,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                                     </div>
                                     <div className="flex items-center gap-1">
                                         <Calendar className="h-4 w-4" />
-                                        <span>Joined {formatDate(user.createdAt)}</span>
+                                        <span>Joined {formatDate(user.created_at)}</span>
                                     </div>
                                 </div>
                             </div>

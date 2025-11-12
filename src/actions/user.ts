@@ -112,7 +112,7 @@ export async function getUserProfile(username: string) {
       image: true,
       bio: true,
       role: true,
-      createdAt: true,
+      created_at: true,
       updatedAt: true,
     },
   });

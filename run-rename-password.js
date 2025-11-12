@@ -1,0 +1,47 @@
+// Script to rename hashed_password to password in mfa database
+const fs = require('fs');
+const { Client } = require('pg');
+
+// Read the migration SQL file
+const migrationSQL = fs.readFileSync('./rename_password_column.sql', 'utf8');
+
+// Database connection config - mfa database
+const client = new Client({
+  host: '35.232.108.201',
+  port: 5432,
+  database: 'mfa',
+  user: 'postgres',
+  password: 'Admin@011235',
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
+async function runMigration() {
+  try {
+    console.log('Connecting to mfa database...');
+    await client.connect();
+    console.log('✅ Connected successfully!\n');
+
+    console.log('Running migration to rename hashed_password to password...');
+    const result = await client.query(migrationSQL);
+    
+    console.log('\n✅ Migration completed successfully!');
+    console.log('\nChanges made:');
+    console.log('  ✓ Dropped duplicate password column');
+    console.log('  ✓ Renamed hashed_password → password');
+    
+    if (result.rows && result.rows.length > 0) {
+      console.log('\n' + result.rows[0].status);
+    }
+  } catch (error) {
+    console.error('\n❌ Migration failed:');
+    console.error(error.message);
+    process.exit(1);
+  } finally {
+    await client.end();
+    console.log('\nDatabase connection closed.');
+  }
+}
+
+runMigration();

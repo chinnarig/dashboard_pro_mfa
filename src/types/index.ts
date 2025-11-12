@@ -35,6 +35,24 @@ export interface PaginatedResponse<T> {
     };
 }
 
+// MFA Response types
+export interface MfaSetupResponse {
+    secret: string;
+    qrCode: string;
+    manualEntryKey: string;
+}
+
+export interface MfaEnableResponse {
+    message: string;
+    backupCodes: string[];
+}
+
+export interface MfaVerifyResponse {
+    success: boolean;
+    message: string;
+    backupCodeUsed?: boolean;
+}
+
 // Form types (re-exported from validation schemas)
 export type {
     LoginInput,
@@ -44,4 +62,7 @@ export type {
     CreateCommentInput,
     UpdateCommentInput,
     UpdateProfileInput,
+    MfaVerificationInput,
+    MfaEnableInput,
+    MfaDisableInput,
 } from '@/lib/validations/schemas';
