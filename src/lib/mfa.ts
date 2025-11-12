@@ -3,7 +3,7 @@ import QRCode from 'qrcode';
 import crypto from 'crypto';
 
 const ENCRYPTION_KEY = process.env.MFA_ENCRYPTION_KEY || process.env.NEXTAUTH_SECRET || 'your-encryption-key-change-this';
-const MFA_ISSUER_NAME = process.env.MFA_ISSUER_NAME || 'Dashboard Pro';
+const MFA_ISSUER_NAME = process.env.MFA_ISSUER_NAME || 'Zlavox AI';
 const ALGORITHM = 'aes-256-cbc';
 const IV_LENGTH = 16;
 

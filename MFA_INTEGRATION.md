@@ -134,7 +134,7 @@ Add to your `.env` file:
 MFA_ENCRYPTION_KEY=your-secure-random-key-here
 
 # Optional: Customize the issuer name shown in authenticator apps
-MFA_ISSUER_NAME="Dashboard Pro"
+MFA_ISSUER_NAME="Zlavox AI"
 
 # Required for NextAuth (should already exist)
 NEXTAUTH_SECRET=your-nextauth-secret

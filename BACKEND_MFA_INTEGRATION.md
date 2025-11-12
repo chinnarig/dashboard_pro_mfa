@@ -130,7 +130,7 @@ Add to `.env`:
 ```env
 BACKEND_URL=http://localhost:8080
 MFA_SECRET_KEY=your-secure-key-here
-MFA_ISSUER_NAME=Dashboard Pro
+MFA_ISSUER_NAME=Zlavox AI
 ```
 
 ### 4. Start Frontend
@@ -211,7 +211,7 @@ DATABASE_URL=postgresql://user:pass@host:port/dbname
 
 # MFA Configuration
 MFA_SECRET_KEY=your-secure-encryption-key-32-chars-minimum
-MFA_ISSUER_NAME=Dashboard Pro
+MFA_ISSUER_NAME=Zlavox AI
 
 # API Configuration
 PORT=8080
