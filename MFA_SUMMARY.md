@@ -90,7 +90,7 @@ You need to complete these steps to activate MFA:
 2. **Add Environment Variables to `.env`:**
    ```env
    MFA_ENCRYPTION_KEY=your-secure-random-key-change-this
-   MFA_ISSUER_NAME="Dashboard Pro"
+   MFA_ISSUER_NAME="Zlavox AI"
    ```
 
 3. **Start Development Server:**

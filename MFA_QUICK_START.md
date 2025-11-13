@@ -23,7 +23,7 @@ Add the following to your `.env` file (create it if it doesn't exist):
 MFA_ENCRYPTION_KEY=your-secure-random-key-change-this-to-a-long-random-string
 
 # Optional: Customize the app name shown in authenticator apps
-MFA_ISSUER_NAME="Dashboard Pro"
+MFA_ISSUER_NAME="Zlavox AI"
 ```
 
 ## Step 3: Test the Integration

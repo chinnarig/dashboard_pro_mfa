@@ -16,7 +16,7 @@ import secrets
 
 # Configuration
 SECRET_KEY = os.getenv("MFA_SECRET_KEY", os.getenv("SECRET_KEY", "your-secret-key-change-this"))
-MFA_ISSUER_NAME = os.getenv("MFA_ISSUER_NAME", "Dashboard Pro")
+MFA_ISSUER_NAME = os.getenv("MFA_ISSUER_NAME", "Zlavox AI")
 
 
 def get_encryption_key() -> bytes:

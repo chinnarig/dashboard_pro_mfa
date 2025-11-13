@@ -139,7 +139,7 @@ export function MfaSetup({ onSuccess, onCancel }: MfaSetupProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-sm text-muted-foreground">
-            You'll need an authenticator app like Google Authenticator, Microsoft Authenticator, or Authy.
+            You&apos;ll need an authenticator app like Google Authenticator, Microsoft Authenticator, or Authy.
           </div>
           
           <div className="flex gap-2">
@@ -186,7 +186,7 @@ export function MfaSetup({ onSuccess, onCancel }: MfaSetupProps) {
               
               <div className="w-full space-y-2">
                 <Label className="text-sm font-medium">
-                  Can't scan? Enter this code manually:
+                  Can&apos;t scan? Enter this code manually:
                 </Label>
                 <div className="flex items-center gap-2">
                   <code className="flex-1 px-3 py-2 bg-muted rounded text-sm font-mono">
@@ -285,7 +285,7 @@ export function MfaSetup({ onSuccess, onCancel }: MfaSetupProps) {
               Copy All Codes
             </Button>
             <Button onClick={handleComplete} size="sm">
-              I've Saved My Codes
+              I&apos;ve Saved My Codes
             </Button>
           </div>
         </CardContent>

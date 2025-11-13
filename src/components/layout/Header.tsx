@@ -41,7 +41,7 @@ export function Header() {
                 {/* Logo */}
                 <div className="flex items-center gap-2 sm:gap-6">
                     <Link href="/" className="flex items-center space-x-2">
-                        <span className="text-xl sm:text-2xl font-bold text-primary">
+                        <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
                             Zlavox AI
                         </span>
                     </Link>
