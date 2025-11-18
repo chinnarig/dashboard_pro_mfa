@@ -52,38 +52,38 @@ export const authOptions: NextAuthOptions = {
                     throw new Error('Invalid credentials');
                 }
 
-                // Call your backend API to get the API key
+                // Optional: Call backend API to get additional data if needed
                 let apiKey = '';
-                try {
-                    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL;
-                    const response = await fetch(`${backendUrl}/api/auth/login`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            email: credentials.email,
-                            password: credentials.password,
-                        }),
-                    });
+                // Commented out for now - enable when backend auth endpoint is ready
+                // try {
+                //     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL;
+                //     const response = await fetch(`${backendUrl}/api/v1/auth/login`, {
+                //         method: 'POST',
+                //         headers: {
+                //             'Content-Type': 'application/json',
+                //         },
+                //         body: JSON.stringify({
+                //             email: credentials.email,
+                //             password: credentials.password,
+                //         }),
+                //     });
 
-                    if (response.ok) {
-                        const data = await response.json();
-                        apiKey = data.apiKey || data.api_key || data.token || '';
-                    }
-                } catch (error) {
-                    console.error('Failed to fetch API key from backend:', error);
-                    // Continue without API key - you can throw error here if API key is mandatory
-                }
+                //     if (response.ok) {
+                //         const data = await response.json();
+                //         apiKey = data.apiKey || data.api_key || data.token || '';
+                //     }
+                // } catch (error) {
+                //     console.error('Failed to fetch API key from backend:', error);
+                // }
 
                 return {
                     id: user.id,
                     email: user.email,
-                    name: user.name,
-                    username: user.username || user.email.split('@')[0], // Ensure username is never null
+                    name: user.fullName || user.email,
+                    username: user.username || user.email.split('@')[0],
                     role: user.role,
                     image: user.image,
-                    apiKey, // Include API key in the user object
+                    apiKey,
                 };
             },
         }),

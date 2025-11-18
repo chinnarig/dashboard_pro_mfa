@@ -58,7 +58,7 @@ interface UserData {
     email: string;
     image: string | null;
     role: string;
-    created_at: Date;
+    createdAt: Date;
 }
 
 interface UserManagementTableProps {
@@ -239,12 +239,12 @@ export function UserManagementTable({
                                             <Avatar className="h-10 w-10">
                                                 <AvatarImage src={user.image || undefined} />
                                                 <AvatarFallback>
-                                                    {user.name?.charAt(0) || user.email.charAt(0)}
+                                                    {user.fullName?.charAt(0) || user.email.charAt(0)}
                                                 </AvatarFallback>
                                             </Avatar>
                                             <div>
                                                 <div className="font-medium">
-                                                    {user.name || 'No name'}
+                                                    {user.fullName || 'No name'}
                                                 </div>
                                                 <div className="text-sm text-muted-foreground">
                                                     @{user.username || 'no-username'}
@@ -266,7 +266,7 @@ export function UserManagementTable({
                                         </Badge>
                                     </TableCell>
                                     <TableCell>
-                                        {new Date(user.created_at).toLocaleDateString()}
+                                        {new Date(user.createdAt).toLocaleDateString()}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <DropdownMenu>

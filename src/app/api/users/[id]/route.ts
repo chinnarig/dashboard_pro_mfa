@@ -17,21 +17,18 @@ export async function GET(
             where: { id },
             select: {
                 id: true,
-                name: true,
+                fullName: true,
                 username: true,
                 email: true,
-                emailVerified: true,
+                isEmailVerified: true,
                 image: true,
                 bio: true,
                 role: true,
+                orgProjectId: true,
+                mfaEnabled: true,
+                isActive: true,
                 createdAt: true,
                 updatedAt: true,
-                _count: {
-                    select: {
-                        accounts: true,
-                        sessions: true,
-                    },
-                },
             },
         });
 
@@ -59,7 +56,7 @@ export async function PUT(
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        if (session.user.id !== id && session.user.role !== 'ADMIN') {
+        if (session.user.id !== id && session.user.role !== 'ADMIN' && session.user.role !== 'Admin') {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
@@ -74,7 +71,7 @@ export async function PUT(
             validated = body;
         }
 
-        const { name, username, email, bio, role, password } = validated;
+        const { fullName, username, email, bio, role, password } = validated;
 
         // Check if email is already taken by another user
         if (email) {
@@ -108,7 +105,7 @@ export async function PUT(
         }
 
         const updateData: any = {
-            name,
+            fullName,
             username,
             email,
             bio,
@@ -125,13 +122,16 @@ export async function PUT(
             data: updateData,
             select: {
                 id: true,
-                name: true,
+                fullName: true,
                 username: true,
                 email: true,
-                emailVerified: true,
+                isEmailVerified: true,
                 image: true,
                 bio: true,
                 role: true,
+                orgProjectId: true,
+                mfaEnabled: true,
+                isActive: true,
                 createdAt: true,
                 updatedAt: true,
             },
@@ -158,7 +158,7 @@ export async function DELETE(
         }
 
         // Only admins can delete users
-        if (session.user.role !== 'ADMIN') {
+        if (session.user.role !== 'ADMIN' && session.user.role !== 'Admin') {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
@@ -179,18 +179,14 @@ export async function DELETE(
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
 
-        // Delete related records first (cascade deletion)
-        await prisma.$transaction([
-            prisma.session.deleteMany({
-                where: { userId: id },
-            }),
-            prisma.account.deleteMany({
-                where: { userId: id },
-            }),
-            prisma.user.delete({
-                where: { id },
-            }),
-        ]);
+        // Soft delete user (set deletedAt instead of hard delete)
+        await prisma.user.update({
+            where: { id },
+            data: {
+                deletedAt: new Date(),
+                isActive: false,
+            },
+        });
 
         return NextResponse.json({ message: 'User deleted successfully' });
     } catch (error) {

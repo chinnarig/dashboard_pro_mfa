@@ -19,7 +19,7 @@ export async function updateProfile(userId: string, data: {
     throw new Error('Unauthorized');
   }
 
-  if (user.id !== userId && user.role !== 'ADMIN') {
+  if (user.id !== userId && user.role !== 'ADMIN' && user.role !== 'Admin') {
     throw new Error('Forbidden');
   }
 
@@ -31,6 +31,7 @@ export async function updateProfile(userId: string, data: {
       where: {
         username: validated.username,
         NOT: { id: userId },
+        deletedAt: null,
       },
     });
 
@@ -41,10 +42,15 @@ export async function updateProfile(userId: string, data: {
 
   const updatedUser = await prisma.user.update({
     where: { id: userId },
-    data: validated,
+    data: {
+      fullName: validated.name,
+      username: validated.username,
+      bio: validated.bio,
+      image: validated.image,
+    },
     select: {
       id: true,
-      name: true,
+      fullName: true,
       username: true,
       email: true,
       image: true,
@@ -94,7 +100,10 @@ export async function changePassword(data: {
   // Update password
   await prisma.user.update({
     where: { id: user.id },
-    data: { password: hashedPassword },
+    data: {
+      password: hashedPassword,
+      passwordChangedAt: new Date(),
+    },
   });
 
   return { success: true };
@@ -103,15 +112,16 @@ export async function changePassword(data: {
 // Get user profile by username
 export async function getUserProfile(username: string) {
   const user = await prisma.user.findUnique({
-    where: { username },
+    where: { username, deletedAt: null },
     select: {
       id: true,
-      name: true,
+      fullName: true,
       username: true,
       email: true,
       image: true,
       bio: true,
       role: true,
+      mfaEnabled: true,
       createdAt: true,
       updatedAt: true,
     },
@@ -151,9 +161,13 @@ export async function deleteAccount(userId: string, password: string) {
     throw new Error('Password is incorrect');
   }
 
-  // Delete user (cascading delete will handle related records)
-  await prisma.user.delete({
+  // Soft delete user (set deletedAt instead of hard delete)
+  await prisma.user.update({
     where: { id: userId },
+    data: {
+      deletedAt: new Date(),
+      isActive: false,
+    },
   });
 
   return { success: true };

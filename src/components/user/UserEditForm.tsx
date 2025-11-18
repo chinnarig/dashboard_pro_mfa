@@ -63,7 +63,7 @@ export function UserEditForm({ user }: UserEditFormProps) {
     } = useForm<UserFormData>({
         resolver: zodResolver(userSchema),
         defaultValues: {
-            name: user.name || '',
+            name: user.fullName || '',
             username: user.username || '',
             bio: user.bio || '',
             image: user.image || '',

@@ -5,8 +5,9 @@ from enum import Enum
 
 class UserRoleEnum(str, Enum):
     """Enum for user roles"""
-    ADMIN = "ADMIN"
-    USER = "USER"
+    ADMIN = "Admin"
+    READ = "Read"
+    WRITE = "Write"
 
 class UserCreate(BaseModel):
     """Schema for creating a new user"""
@@ -14,7 +15,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     confirm_password: str
-    role: UserRoleEnum = UserRoleEnum.USER
+    role: UserRoleEnum = UserRoleEnum.READ
     
     @field_validator('confirm_password')
     @classmethod
@@ -68,41 +69,50 @@ class OrganisationUserResponse(BaseModel):
 
 class OrganisationCreate(BaseModel):
     """Schema for creating a new organisation"""
+    project_id: str
     name: str
-    email: EmailStr
-    password_hash: str
-    confirm_password: str
-    phone_number_primary: str
-    phone_number_secondary: Optional[str] = None
-    address: str
-    api_key: str
-    
-    @field_validator('confirm_password')
-    @classmethod
-    def passwords_match(cls, v, info):
-        if 'password_hash' in info.data and v != info.data['password_hash']:
-            raise ValueError('Passwords do not match')
-        return v
+    url: Optional[str] = None
+    sip_url: Optional[str] = None
+    lk_url: Optional[str] = None
+    lk_api_key: str
+    lk_api_secret: str
+    is_active: Optional[bool] = True
+    address: Optional[str] = None
+    email: Optional[EmailStr] = None
+    phone_number_1: Optional[str] = None
+    phone_number_2: Optional[str] = None
 
 class OrganisationUpdate(BaseModel):
     """Schema for updating an organisation"""
+    project_id: Optional[str] = None
     name: Optional[str] = None
-    email: Optional[EmailStr] = None
-    password_hash: Optional[str] = None
-    phone_number_primary: Optional[str] = None
-    phone_number_secondary: Optional[str] = None
+    url: Optional[str] = None
+    sip_url: Optional[str] = None
+    lk_url: Optional[str] = None
+    lk_api_key: Optional[str] = None
+    lk_api_secret: Optional[str] = None
+    is_active: Optional[bool] = None
     address: Optional[str] = None
-    api_key: Optional[str] = None
+    email: Optional[EmailStr] = None
+    phone_number_1: Optional[str] = None
+    phone_number_2: Optional[str] = None
 
 class OrganisationResponse(BaseModel):
     """Schema for organisation response"""
     id: str
+    project_id: str
     name: str
-    email: EmailStr
-    phone_number_primary: str
-    phone_number_secondary: Optional[str] = None
-    address: str
-    api_key: str
+    url: Optional[str] = None
+    sip_url: Optional[str] = None
+    lk_url: Optional[str] = None
+    lk_api_key: str
+    is_active: Optional[bool] = None
+    address: Optional[str] = None
+    email: Optional[EmailStr] = None
+    phone_number_1: Optional[str] = None
+    phone_number_2: Optional[str] = None
+    created_at: datetime
+    updated_at: Optional[datetime] = None
     
     class Config:
         from_attributes = True

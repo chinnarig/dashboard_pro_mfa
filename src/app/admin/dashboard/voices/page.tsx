@@ -15,7 +15,7 @@ interface PageProps {
 export default async function Page({ searchParams }: PageProps) {
     const currentUser = await getCurrentUser();
 
-    if (!currentUser || currentUser.role !== 'ADMIN') {
+    if (!currentUser || (currentUser.role !== 'ADMIN' && currentUser.role !== 'Admin')) {
         redirect('/');
     }
 

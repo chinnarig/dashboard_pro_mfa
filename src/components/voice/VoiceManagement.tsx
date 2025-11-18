@@ -89,8 +89,10 @@ const VoiceManagement = (props: VoiceManagementProps) => {
                 setIsLoading(true);
                 setError(null);
 
+                const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080';
+
                 // Fetch voices - Updated endpoint
-                const voicesResponse = await fetch('https://zstream-z6nbrimbea-uc.a.run.app/api/v1/voices', {
+                const voicesResponse = await fetch(`${backendUrl}/api/v1/voices`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -122,7 +124,7 @@ const VoiceManagement = (props: VoiceManagementProps) => {
                 }
 
                 // Fetch phone numbers - Updated endpoint
-                const phoneNumbersResponse = await fetch('https://zstream-z6nbrimbea-uc.a.run.app/api/v1/phone-numbers', {
+                const phoneNumbersResponse = await fetch(`${backendUrl}/api/v1/phone-numbers`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -184,13 +186,13 @@ const VoiceManagement = (props: VoiceManagementProps) => {
             setIsCreating(true);
             setError(null);
 
-            const response = await fetch('https://zstream-z6nbrimbea-uc.a.run.app/api/v1/create-agent', {
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080';
+            const response = await fetch(`${backendUrl}/api/v1/agents`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    system_prompt: prompt.trim(),
                     agent_name: agentName.trim(),
                     voice_id: selectedVoiceId,
                     phone_number: selectedPhoneNumber,

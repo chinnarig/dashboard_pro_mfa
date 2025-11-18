@@ -102,7 +102,7 @@ export default function UsersTable({ users: initialUsers }: UsersTableProps) {
             const query = searchQuery.toLowerCase();
             filtered = filtered.filter(
                 (user) =>
-                    user.name?.toLowerCase().includes(query) ||
+                    user.fullName?.toLowerCase().includes(query) ||
                     user.username?.toLowerCase().includes(query) ||
                     user.email.toLowerCase().includes(query)
             );
@@ -135,7 +135,7 @@ export default function UsersTable({ users: initialUsers }: UsersTableProps) {
     const openEditDialog = (user: User) => {
         setEditingUser(user);
         setFormData({
-            name: user.name || '',
+            name: user.fullName || '',
             username: user.username || '',
             email: user.email,
             bio: user.bio || '',
@@ -321,7 +321,7 @@ export default function UsersTable({ users: initialUsers }: UsersTableProps) {
                             {filteredUsers.map((user) => (
                                 <TableRow key={user.id}>
                                     <TableCell className="font-medium">
-                                        {user.name || <span className="text-muted-foreground italic">No name</span>}
+                                        {user.fullName || <span className="text-muted-foreground italic">No name</span>}
                                     </TableCell>
                                     <TableCell>{user.email}</TableCell>
                                     <TableCell>

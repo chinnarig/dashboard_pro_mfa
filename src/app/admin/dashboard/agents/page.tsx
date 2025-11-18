@@ -13,8 +13,9 @@ interface Agent {
 
 async function getAgents(): Promise<Agent[]> {
   try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || 'http://localhost:8080';
     const response = await fetch(
-      'https://zstream-qa-1073093827343.us-central1.run.app/api/v1/agents',
+      `${backendUrl}/api/v1/agents`,
       {
         cache: 'no-store', // Ensures fresh data on each request
       }

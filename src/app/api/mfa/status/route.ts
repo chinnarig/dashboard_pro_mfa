@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
       where: { id: session.user.id },
       select: {
         mfaEnabled: true,
-        lastLogin: true,
+        lastLoginAt: true,
       },
     });
 

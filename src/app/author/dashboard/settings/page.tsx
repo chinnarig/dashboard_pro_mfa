@@ -15,7 +15,7 @@ async function getUserData(userId: string) {
         where: { id: userId },
         select: {
             id: true,
-            name: true,
+            fullName: true,
             username: true,
             email: true,
             image: true,

@@ -121,8 +121,9 @@ const VoiceManagementApp = ({ editData }: VoiceManagementAppProps) => {
         setError(null);
 
         try {
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080';
             const response = await fetch(
-                `https://zstream-qa-1073093827343.us-central1.run.app/api/v1/agents/${id}`,
+                `${backendUrl}/api/v1/agents/${id}`,
                 {
                     method: 'GET',
                     headers: {
@@ -160,8 +161,10 @@ const VoiceManagementApp = ({ editData }: VoiceManagementAppProps) => {
                 setIsLoading(true);
                 setError(null);
 
+                const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080';
+
                 // Fetch voices
-                const voicesResponse = await fetch('https://zstream-qa-1073093827343.us-central1.run.app/api/v1/voices', {
+                const voicesResponse = await fetch(`${backendUrl}/api/v1/voices`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -190,7 +193,7 @@ const VoiceManagementApp = ({ editData }: VoiceManagementAppProps) => {
                 }
 
                 // Fetch phone numbers
-                const phoneNumbersResponse = await fetch('https://zstream-qa-1073093827343.us-central1.run.app/api/v1/phone-numbers', {
+                const phoneNumbersResponse = await fetch(`${backendUrl}/api/v1/phone-numbers`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -317,8 +320,9 @@ const VoiceManagementApp = ({ editData }: VoiceManagementAppProps) => {
         setSuccess(null);
 
         try {
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080';
             const response = await fetch(
-                `https://zstream-qa-1073093827343.us-central1.run.app/api/v1/agents/${agentId}`,
+                `${backendUrl}/api/v1/agents/${agentId}`,
                 {
                     method: 'PUT', // or 'PATCH' depending on your API
                     headers: {

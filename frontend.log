@@ -1,0 +1,25 @@
+
+> z-dashboard-ai@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.5.4
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.194:3000
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · serverActions
+
+ ✓ Starting...
+ ✓ Ready in 2.4s
+ ○ Compiling /admin/dashboard ...
+ ✓ Compiled /admin/dashboard in 6.8s (2473 modules)
+ GET /admin/dashboard 200 in 9082ms
+ ○ Compiling /api/auth/[...nextauth] ...
+ ✓ Compiled /api/auth/[...nextauth] in 1180ms (1461 modules)
+ ✓ Compiled in 1063ms (1030 modules)
+ GET /favicon.ico 200 in 3197ms
+ GET /api/auth/session 200 in 4129ms
+ GET /api/auth/session 200 in 35ms
+ ✓ Compiled / in 339ms (2499 modules)
+ GET / 200 in 800ms
+[?25h

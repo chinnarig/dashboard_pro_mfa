@@ -186,74 +186,8 @@ async def get_agents():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch agents: {str(e)}")
 
-# --- GET CALLS ENDPOINT ---
-@app.get("/api/v1/calls")
-async def get_calls():
-    """Fetches the call history."""
-    try:
-        calls = client.call.list()
-        call_details = []
-        for call in calls:
-            call_details.append({
-                "call_id": call.call_id,
-                "agent_name": getattr(call, 'agent_name', 'N/A'),
-                "start_timestamp": call.start_timestamp,
-                "end_timestamp": getattr(call, 'end_timestamp', None),
-                "duration_ms": getattr(call, 'duration_ms', 0),
-                "call_status": getattr(call, 'call_status', 'N/A'),
-                "from_number": getattr(call, 'from_number', 'N/A'),
-                "to_number": getattr(call, 'to_number', 'N/A'),
-                "disconnection_reason": getattr(call, 'disconnection_reason', 'N/A'),
-            })
-        return call_details
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch call history: {str(e)}")
-
-# --- GET CALL DETAILS ENDPOINT ---
-@app.get("/api/v1/call/{call_id}")
-async def get_call_details(call_id: str):
-    """Fetches the full, detailed object for a single call."""
-    try:
-        call = client.call.retrieve(call_id)
-        formatted_transcript = ""
-        if hasattr(call, 'transcript_object') and call.transcript_object:
-            for entry in call.transcript_object:
-                role = "User" if entry.role == "user" else "Agent"
-                formatted_transcript += f"**{role}:** {entry.content}\n\n"
-
-        call_analysis = getattr(call, 'call_analysis', {})
-        call_cost = getattr(call, 'call_cost', {})
-
-        USD_TO_GBP_RATE = 0.82
-
-        product_costs_in_pounds = []
-        if hasattr(call_cost, 'product_costs'):
-            for cost in call_cost.product_costs:
-                cost_in_dollars = cost.cost / 100
-                product_costs_in_pounds.append({
-                    "product": cost.product,
-                    "cost": cost_in_dollars * USD_TO_GBP_RATE
-                })
-
-        combined_cost_in_dollars = getattr(call_cost, 'combined_cost', 0) / 100
-        combined_cost_in_pounds = combined_cost_in_dollars * USD_TO_GBP_RATE
-
-        return {
-            "call_id": call.call_id,
-            "start_timestamp": call.start_timestamp,
-            "end_timestamp": getattr(call, 'end_timestamp', None),
-            "duration_ms": getattr(call, 'duration_ms', 0),
-            "formatted_transcript": formatted_transcript,
-            "recording_url": getattr(call, 'recording_url', None),
-            "call_summary": getattr(call_analysis, 'call_summary', "Not available."),
-            "user_sentiment": getattr(call_analysis, 'user_sentiment', "Not available."),
-            "cost_details": {
-                "combined_cost": combined_cost_in_pounds,
-                "product_costs": product_costs_in_pounds
-            }
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch call details: {str(e)}")
+# --- CALLS ENDPOINTS NOW IN app/api/endpoints/calls.py ---
+# Removed direct route definitions - using router include instead
 
 # --- CORE LOGIC: Create and Link Agent ---
 def create_and_link_agent(agent_name: str, voice_id: str, phone_number: str, system_prompt: Optional[str] = None, start_speaker: str = "agent"):

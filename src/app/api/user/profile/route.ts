@@ -60,7 +60,7 @@ export async function PUT(request: NextRequest) {
             },
             select: {
                 id: true,
-                name: true,
+                fullName: true,
                 username: true,
                 email: true,
                 image: true,
@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
             where: { id: session.user.id },
             select: {
                 id: true,
-                name: true,
+                fullName: true,
                 username: true,
                 email: true,
                 image: true,

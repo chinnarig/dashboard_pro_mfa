@@ -18,21 +18,21 @@ export async function GET() {
         const users = await prisma.user.findMany({
             select: {
                 id: true,
-                name: true,
+                fullName: true,
                 username: true,
                 email: true,
-                emailVerified: true,
+                isEmailVerified: true,
                 image: true,
                 bio: true,
                 role: true,
+                orgProjectId: true,
+                mfaEnabled: true,
+                isActive: true,
                 createdAt: true,
                 updatedAt: true,
-                _count: {
-                    select: {
-                        accounts: true,
-                        sessions: true,
-                    },
-                },
+            },
+            where: {
+                deletedAt: null,
             },
             orderBy: {
                 createdAt: 'desc',
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json();
-        const { name, username, email, password, bio, role } = body;
+        const { fullName, username, email, password, bio, role, orgProjectId } = body;
 
         // Validate required fields
         if (!email || !password) {
@@ -104,22 +104,29 @@ export async function POST(request: Request) {
         // Create user
         const user = await prisma.user.create({
             data: {
-                name,
+                fullName,
                 username,
                 email,
                 password: hashedPassword,
                 bio,
-                role: role || 'USER',
+                role: role || 'Read',
+                orgProjectId,
+                authMethod: 'password',
+                isActive: true,
+                isEmailVerified: false,
             },
             select: {
                 id: true,
-                name: true,
+                fullName: true,
                 username: true,
                 email: true,
-                emailVerified: true,
+                isEmailVerified: true,
                 image: true,
                 bio: true,
                 role: true,
+                orgProjectId: true,
+                mfaEnabled: true,
+                isActive: true,
                 createdAt: true,
                 updatedAt: true,
             },

@@ -4,6 +4,8 @@ import { prisma } from '@/lib/prisma';
 import { ProfileForm } from '@/components/form/ProfileForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { MfaSettings } from '@/components/auth/MfaSettings';
+import { Separator } from '@/components/ui/separator';
 
 export const metadata = {
     title: 'Settings | Zlavox AI',
@@ -15,13 +17,15 @@ async function getUserData(userId: string) {
         where: { id: userId },
         select: {
             id: true,
-            name: true,
+            fullName: true,
             username: true,
             email: true,
             image: true,
             bio: true,
             role: true,
             createdAt: true,
+            mfaEnabled: true,
+            lastLoginAt: true,
         },
     });
 
@@ -55,6 +59,7 @@ export default async function SettingsPage() {
                     <TabsList>
                         <TabsTrigger value="profile">Profile</TabsTrigger>
                         <TabsTrigger value="account">Account</TabsTrigger>
+                        <TabsTrigger value="security">Security</TabsTrigger>
                         <TabsTrigger value="preferences">Preferences</TabsTrigger>
                     </TabsList>
 
@@ -86,7 +91,7 @@ export default async function SettingsPage() {
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Member Since</label>
                                     <p className="text-sm text-muted-foreground">
-                                        {new Date(user.createdAt).toLocaleDateString('en-US', {
+                                        {user.createdAt && new Date(user.createdAt).toLocaleDateString('en-US', {
                                             month: 'long',
                                             day: 'numeric',
                                             year: 'numeric',
@@ -95,6 +100,47 @@ export default async function SettingsPage() {
                                 </div>
                             </CardContent>
                         </Card>
+                    </TabsContent>
+
+                    {/* Security Tab */}
+                    <TabsContent value="security">
+                        <div className="space-y-6">
+                            <MfaSettings mfaEnabled={user.mfaEnabled || false} />
+
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Recent Activity</CardTitle>
+                                    <CardDescription>
+                                        Keep track of your account security
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    {user.lastLoginAt ? (
+                                        <p className="text-sm text-muted-foreground">
+                                            Last login: {new Date(user.lastLoginAt).toLocaleString()}
+                                        </p>
+                                    ) : (
+                                        <p className="text-sm text-muted-foreground">
+                                            No recent login activity
+                                        </p>
+                                    )}
+                                </CardContent>
+                            </Card>
+
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Password</CardTitle>
+                                    <CardDescription>
+                                        Change your password
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-sm text-muted-foreground">
+                                        Password management coming soon
+                                    </p>
+                                </CardContent>
+                            </Card>
+                        </div>
                     </TabsContent>
 
                     {/* Preferences Tab */}

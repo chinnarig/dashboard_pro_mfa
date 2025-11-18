@@ -12,13 +12,13 @@ async function getUserById(id: string) {
         where: { id },
         select: {
             id: true,
-            name: true,
+            fullName: true,
             username: true,
             email: true,
             image: true,
             bio: true,
             role: true,
-            created_at: true,
+            createdAt: true,
         },
     });
 
@@ -34,7 +34,7 @@ export default async function UserPage({
 
     const { id } = await params;
 
-    if (!currentUser || currentUser.role !== 'ADMIN') {
+    if (!currentUser || (currentUser.role !== 'ADMIN' && currentUser.role !== 'Admin')) {
         redirect('/');
     }
 
@@ -52,11 +52,11 @@ export default async function UserPage({
                     <Avatar className="h-20 w-20">
                         <AvatarImage src={user.image || undefined} />
                         <AvatarFallback className="text-2xl">
-                            {user.name?.charAt(0) || user.email.charAt(0)}
+                            {user.fullName?.charAt(0) || user.email.charAt(0)}
                         </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                        <h1 className="text-3xl font-bold">{user.name || 'No name'}</h1>
+                        <h1 className="text-3xl font-bold">{user.fullName || 'No name'}</h1>
                         <p className="text-muted-foreground">@{user.username || 'no-username'}</p>
                         <Badge variant={user.role === 'ADMIN' ? 'default' : 'secondary'} className="mt-2">
                             {user.role}
@@ -72,7 +72,7 @@ export default async function UserPage({
                             <div className="flex items-center gap-2">
                                 <CalendarDays className="h-4 w-4 text-muted-foreground" />
                                 <div className="text-sm font-medium">
-                                    {new Date(user.created_at).toLocaleDateString('en-US', {
+                                    {new Date(user.createdAt).toLocaleDateString('en-US', {
                                         month: 'short',
                                         year: 'numeric',
                                     })}

@@ -47,7 +47,7 @@ interface UsageData {
 
 async function getBillingData(): Promise<UsageData> {
   try {
-    const response = await fetch('https://zstream-qa-1073093827343.us-central1.run.app/api/v1/calls', {
+    const response = await fetch('http://localhost:8080/api/v1/calls', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

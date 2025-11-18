@@ -53,7 +53,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
     } = useForm<ProfileFormData>({
         resolver: zodResolver(profileSchema),
         defaultValues: {
-            name: user.name || '',
+            name: user.fullName || '',
             username: user.username || '',
             bio: user.bio || '',
             image: user.image || '',

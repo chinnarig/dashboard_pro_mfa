@@ -36,7 +36,7 @@ class Settings(BaseSettings):
     HOST: str = "0.0.0.0"  # Use 0.0.0.0 for production in Cloud Run
     
     # Database Settings
-    DATABASE_URL: str = "postgresql://postgres:Admin%40011235@35.232.108.201:5432/postgres"
+    DATABASE_URL: str = "postgresql://postgres:Admin%40011235@35.232.108.201:5432/livekit?sslmode=require"
     
     # File Paths
     BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent

@@ -20,7 +20,7 @@ async function getUser(username: string) {
         where: { username },
         select: {
             id: true,
-            name: true,
+            fullName: true,
             username: true,
             email: true,
             image: true,
@@ -46,8 +46,8 @@ export async function generateMetadata({
     }
 
     return {
-        title: `${user.name || user.username} | Zlavox AI`,
-        description: user.bio || `Profile of ${user.name || user.username}`,
+        title: `${user.fullName || user.username} | Zlavox AI`,
+        description: user.bio || `Profile of ${user.fullName || user.username}`,
     };
 }
 
@@ -77,7 +77,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                     <CardContent className="pt-6">
                         <div className="flex flex-col md:flex-row gap-6 items-start">
                             <Avatar className="h-24 w-24">
-                                <AvatarImage src={user.image || ''} alt={user.name || ''} />
+                                <AvatarImage src={user.image || ''} alt={user.fullName || ''} />
                                 <AvatarFallback className="text-2xl">
                                     {getInitials(user?.name || user?.username || "")}
                                 </AvatarFallback>
@@ -87,7 +87,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                                 <div className="flex items-start justify-between mb-4">
                                     <div>
                                         <h1 className="text-3xl font-bold mb-1">
-                                            {user.name || `@${user.username}`}
+                                            {user.fullName || `@${user.username}`}
                                         </h1>
                                         <p className="text-muted-foreground">@{user.username}</p>
                                     </div>

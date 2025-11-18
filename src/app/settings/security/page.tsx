@@ -22,7 +22,7 @@ export default async function SecuritySettingsPage() {
     where: { email: currentUser.email },
     select: {
       mfaEnabled: true,
-      lastLogin: true,
+      lastLoginAt: true,
     },
   });
 

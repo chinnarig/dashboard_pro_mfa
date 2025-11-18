@@ -16,12 +16,12 @@ export default async function AdminLayout({
 }) {
     const user = await getCurrentUser();
 
-    if (!user || user.role !== 'ADMIN') {
+    if (!user || (user.role !== 'ADMIN' && user.role !== 'Admin')) {
         redirect('/');
     }
 
-    const userInitials = user.name
-        ? user.name
+    const userInitials = user.fullName
+        ? user.fullName
             .split(' ')
             .map((n) => n[0])
             .join('')
@@ -38,12 +38,12 @@ export default async function AdminLayout({
                     <div className="p-6 pb-4 shrink-0">
                         <div className="flex items-center gap-3 mb-4">
                             <Avatar className="h-10 w-10">
-                                <AvatarImage src={user.image || undefined} alt={user.name || 'User'} />
+                                <AvatarImage src={user.image || undefined} alt={user.fullName || 'User'} />
                                 <AvatarFallback>{userInitials}</AvatarFallback>
                             </Avatar>
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium truncate">
-                                    {user.name || 'Admin User'}
+                                    {user.fullName || 'Admin User'}
                                 </p>
                                 <p className="text-xs text-muted-foreground truncate">
                                     {user.email}

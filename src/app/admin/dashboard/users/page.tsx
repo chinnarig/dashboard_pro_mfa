@@ -29,10 +29,10 @@ async function getUsers(): Promise<User[]> {
         const users = await prisma.user.findMany({
             select: {
                 id: true,
-                name: true,
+                fullName: true,
                 username: true,
                 email: true,
-                emailVerified: true,
+                isEmailVerified: true,
                 image: true,
                 bio: true,
                 role: true,

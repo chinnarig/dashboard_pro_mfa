@@ -41,7 +41,7 @@ export function Header() {
                 {/* Logo */}
                 <div className="flex items-center gap-2 sm:gap-6">
                     <Link href="/" className="flex items-center space-x-2">
-                        <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
+                        <span className="text-xl sm:text-2xl font-bold text-primary">
                             Zlavox AI
                         </span>
                     </Link>
@@ -73,9 +73,9 @@ export function Header() {
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                                         <Avatar className="h-9 w-9">
-                                            <AvatarImage src={session.user.image || ''} alt={session.user.name || ''} />
+                                            <AvatarImage src={session.user.image || ''} alt={session.user.fullName || ''} />
                                             <AvatarFallback>
-                                                {getInitials(session.user.name || session.user.email)}
+                                                {getInitials(session.user.fullName || session.user.email)}
                                             </AvatarFallback>
                                         </Avatar>
                                     </Button>
@@ -83,8 +83,8 @@ export function Header() {
                                 <DropdownMenuContent className="w-56" align="end" forceMount>
                                     <div className="flex items-center justify-start gap-2 p-2">
                                         <div className="flex flex-col space-y-1 leading-none">
-                                            {session.user.name && (
-                                                <p className="font-medium">{session.user.name}</p>
+                                            {session.user.fullName && (
+                                                <p className="font-medium">{session.user.fullName}</p>
                                             )}
                                             <p className="w-[200px] truncate text-sm text-muted-foreground">
                                                 @{session.user.username}
@@ -98,7 +98,7 @@ export function Header() {
                                             Profile
                                         </Link>
                                     </DropdownMenuItem>
-                                    {session.user.role === 'ADMIN' && (
+                                    {(session.user.role === 'ADMIN' || session.user.role === 'Admin') && (
                                         <>
                                             <DropdownMenuItem asChild>
                                                 <Link href="/admin/dashboard">
@@ -116,7 +116,7 @@ export function Header() {
                                         </>
 
                                     )}
-                                    {session.user.role === 'USER' && (
+                                    {(session.user.role === 'USER' || session.user.role === 'Read' || session.user.role === 'Write') && (
                                         <>
                                             <DropdownMenuItem asChild>
                                                 <Link href="/author/dashboard">
@@ -179,14 +179,14 @@ export function Header() {
                                 {session && (
                                     <div className="flex items-center gap-3 p-3 rounded-lg bg-muted">
                                         <Avatar className="h-12 w-12">
-                                            <AvatarImage src={session.user.image || ''} alt={session.user.name || ''} />
+                                            <AvatarImage src={session.user.image || ''} alt={session.user.fullName || ''} />
                                             <AvatarFallback>
-                                                {getInitials(session.user.name || session.user.email)}
+                                                {getInitials(session.user.fullName || session.user.email)}
                                             </AvatarFallback>
                                         </Avatar>
                                         <div className="flex flex-col">
-                                            {session.user.name && (
-                                                <p className="font-medium">{session.user.name}</p>
+                                            {session.user.fullName && (
+                                                <p className="font-medium">{session.user.fullName}</p>
                                             )}
                                             <p className="text-sm text-muted-foreground">
                                                 @{session.user.username}
@@ -216,7 +216,7 @@ export function Header() {
                                                 <span>Profile</span>
                                             </Link>
 
-                                            {session.user.role === 'ADMIN' && (
+                                            {(session.user.role === 'ADMIN' || session.user.role === 'Admin') && (
                                                 <div>
                                                     <Link
                                                         href="/admin/dashboard"
@@ -236,7 +236,7 @@ export function Header() {
                                                     </Link>
 
                                                     <Link
-                                                        href="/admin/dashboard//settings"
+                                                        href="/admin/dashboard/settings"
                                                         className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors"
                                                         onClick={() => setMobileMenuOpen(false)}
                                                     >
@@ -246,7 +246,7 @@ export function Header() {
                                                 </div>
                                             )}
 
-                                            {session.user.role === 'USER' && (
+                                            {(session.user.role === 'USER' || session.user.role === 'Read' || session.user.role === 'Write') && (
                                                 <div>
                                                     <Link
                                                         href="/author/dashboard"

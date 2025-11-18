@@ -97,12 +97,19 @@ async def list_organisations(skip: int = 0, limit: int = 100, db: Session = Depe
         return [
             OrganisationResponse(
                 id=str(org.id),
+                project_id=org.project_id,
                 name=org.name,
-                email=org.email,
-                phone_number_primary=org.phone_number_primary,
-                phone_number_secondary=org.phone_number_secondary,
+                url=org.url,
+                sip_url=org.sip_url,
+                lk_url=org.lk_url,
+                lk_api_key=org.lk_api_key,
+                is_active=org.is_active,
                 address=org.address,
-                api_key=org.api_key
+                email=org.email,
+                phone_number_1=org.phone_number_1,
+                phone_number_2=org.phone_number_2,
+                created_at=org.created_at,
+                updated_at=org.updated_at
             )
             for org in organisations
         ]
@@ -127,12 +134,19 @@ async def get_organisation(organisation_id: str, db: Session = Depends(get_db)):
         
         return OrganisationResponse(
             id=str(organisation.id),
+            project_id=organisation.project_id,
             name=organisation.name,
-            email=organisation.email,
-            phone_number_primary=organisation.phone_number_primary,
-            phone_number_secondary=organisation.phone_number_secondary,
+            url=organisation.url,
+            sip_url=organisation.sip_url,
+            lk_url=organisation.lk_url,
+            lk_api_key=organisation.lk_api_key,
+            is_active=organisation.is_active,
             address=organisation.address,
-            api_key=organisation.api_key
+            email=organisation.email,
+            phone_number_1=organisation.phone_number_1,
+            phone_number_2=organisation.phone_number_2,
+            created_at=organisation.created_at,
+            updated_at=organisation.updated_at
         )
     except HTTPException:
         raise
